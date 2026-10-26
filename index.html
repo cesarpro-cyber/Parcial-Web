@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca digital — Catálogo y préstamos</title>
+  <meta name="description" content="Biblioteca digital: catálogo de libros, préstamos, historial y ajustes, hecha con HTML, CSS y JavaScript.">
+  <meta name="author" content="Cesar Emilio Caro Carrillo">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <img src="img/logo.svg" alt="Logotipo de la biblioteca: tres libros en un estante" width="40" height="40">
+      <h1>Biblioteca digital</h1>
+    </div>
+    <nav aria-label="Principal">
+      <ul class="menu">
+        <li><a href="#catalogo" data-vista="catalogo" class="activo">Catálogo</a></li>
+        <li><a href="#prestamos" data-vista="prestamos" id="enlace-prestamos">Mis préstamos (0)</a></li>
+        <li><a href="#formulario" data-vista="formulario">Agregar libro</a></li>
+        <li><a href="#resumen" data-vista="resumen">Resumen</a></li>
+      </ul>
+    </nav>
+    <p id="saludo" class="saludo"></p>
+  </header>
+
+  <main>
+    <p id="mensaje-global" class="mensaje" role="status" aria-live="polite" hidden></p>
+
+    <section id="vista-catalogo" class="vista" aria-labelledby="t-catalogo">
+      <h2 id="t-catalogo">Catálogo</h2>
+      <div class="controles">
+        <div class="campo"><label for="busqueda">Buscar por título o autor</label>
+          <input type="search" id="busqueda" autocomplete="off"></div>
+        <div class="campo"><label for="filtro-genero">Género</label>
+          <select id="filtro-genero"></select></div>
+        <div class="campo"><label for="orden-campo">Ordenar por</label>
+          <select id="orden-campo">
+            <option value="titulo">Título</option><option value="autor">Autor</option><option value="anio">Año</option>
+          </select></div>
+        <div class="campo"><label for="orden-dir">Sentido</label>
+          <select id="orden-dir"><option value="asc">Ascendente</option><option value="desc">Descendente</option></select></div>
+      </div>
+      <div class="filtros" role="group" aria-label="Filtrar por estado">
+        <button type="button" class="btn-filtro activo" data-estado="todos">Todos</button>
+        <button type="button" class="btn-filtro" data-estado="disponibles">Disponibles</button>
+        <button type="button" class="btn-filtro" data-estado="prestados">Prestados</button>
+      </div>
+      <p id="contador" aria-live="polite"></p>
+      <div id="lista-libros" class="tarjetas"></div>
+    </section>
+
+    <section id="vista-prestamos" class="vista" aria-labelledby="t-prestamos" hidden>
+      <h2 id="t-prestamos">Mis préstamos</h2>
+      <ul id="lista-activos" class="lista"></ul>
+      <p id="vacio-activos" class="vacio" hidden>No hay préstamos activos.</p>
+      <h3>Historial</h3>
+      <ul id="lista-historial" class="lista"></ul>
+      <p id="vacio-historial" class="vacio" hidden>Todavía no hay préstamos devueltos.</p>
+    </section>
+
+    <section id="vista-formulario" class="vista" aria-labelledby="t-form" hidden>
+      <h2 id="t-form">Agregar libro</h2>
+      <form id="form-libro" novalidate>
+        <div class="campo"><label for="f-titulo">Título</label>
+          <input id="f-titulo" name="titulo" type="text" autocomplete="off">
+          <span class="error" id="err-titulo"></span></div>
+        <div class="campo"><label for="f-autor">Autor</label>
+          <input id="f-autor" name="autor" type="text" autocomplete="off">
+          <span class="error" id="err-autor"></span></div>
+        <div class="campo"><label for="f-anio">Año</label>
+          <input id="f-anio" name="anio" type="number">
+          <span class="error" id="err-anio"></span></div>
+        <div class="campo"><label for="f-genero">Género</label>
+          <select id="f-genero" name="genero">
+            <option value="novela">Novela</option><option value="ciencia">Ciencia</option>
+            <option value="historia">Historia</option><option value="fantasía">Fantasía</option>
+            <option value="poesía">Poesía</option>
+          </select>
+          <span class="error" id="err-genero"></span></div>
+        <div class="campo"><label for="f-comentario">Comentario</label>
+          <textarea id="f-comentario" name="comentario" rows="4" maxlength="120"></textarea>
+          <span id="cuenta-comentario" class="ayuda">Quedan 120 caracteres</span></div>
+        <div class="campo check"><input id="f-coleccion" name="coleccion" type="checkbox">
+          <label for="f-coleccion">Ejemplar de colección</label>
+          <span class="error" id="err-coleccion"></span></div>
+        <div class="acciones">
+          <button type="submit" id="btn-enviar" class="btn primario">Agregar libro</button>
+          <button type="button" id="btn-cancelar-edicion" class="btn" hidden>Cancelar</button>
+        </div>
+      </form>
+      <p id="mensaje-form" class="mensaje" role="status" aria-live="polite" hidden></p>
+    </section>
+
+    <section id="vista-resumen" class="vista" aria-labelledby="t-resumen" hidden>
+      <h2 id="t-resumen">Resumen y ajustes</h2>
+      <ul id="resumen-datos" class="lista resumen"></ul>
+      <h3>Libros por género</h3>
+      <ul id="resumen-generos" class="lista"></ul>
+      <h3>Ajustes</h3>
+      <div class="campo"><label for="nombre-usuario">Tu nombre</label>
+        <input id="nombre-usuario" type="text" maxlength="40" autocomplete="off"></div>
+      <div class="acciones">
+        <button type="button" id="btn-tema" class="btn">Cambiar tema</button>
+        <button type="button" id="btn-reset" class="btn peligro">Restablecer biblioteca</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-prestar" class="modal" role="dialog" aria-modal="true" aria-labelledby="mp-titulo" hidden>
+    <div class="modal-caja">
+      <h2 id="mp-titulo">Prestar libro</h2>
+      <div class="campo"><label for="mp-persona">¿A quién se presta?</label>
+        <input id="mp-persona" type="text" autocomplete="off">
+        <span class="error" id="mp-error"></span></div>
+      <div class="acciones">
+        <button type="button" id="mp-confirmar" class="btn primario">Prestar</button>
+        <button type="button" id="mp-cancelar" class="btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-eliminar" class="modal" role="dialog" aria-modal="true" aria-labelledby="me-texto" hidden>
+    <div class="modal-caja">
+      <h2 id="me-texto">¿Eliminar?</h2>
+      <div class="acciones">
+        <button type="button" id="me-confirmar" class="btn peligro">Eliminar</button>
+        <button type="button" id="me-cancelar" class="btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/logica.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
